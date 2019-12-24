@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-react-high-chart-drilldown-client-side-solution",
+    "id": "55ef8146-e044-45c2-a55e-a9d474045429",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "isDomainIsolated": false
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-react-high-chart-drilldown.sppkg"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "high-chart-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/highChart/HighChartWebPart.js",
+          "manifest": "./src/webparts/highChart/HighChartWebPart.manifest.json"
+        }
+      ]
+    },
+    "progress-bar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/progressBar/ProgressBarWebPart.js",
+          "manifest": "./src/webparts/progressBar/ProgressBarWebPart.manifest.json"
+        }
+      ]
+    },
+    "table-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/table/TableWebPart.js",
+          "manifest": "./src/webparts/table/TableWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {
+    "highcharts": {
+      "path": "node_modules/highcharts/highcharts.js",
+      "globalName": "highcharts"
+    },
+    "myScript": {
+      "path": "./src/helper/ProgressBar.js",
+      "globalName": "MyScript"
+    },
+    "jquery": {
+      "path": "/node_modules/jquery/dist/jquery.min.js",
+      "globalName": "jQuery"
+    }
+  },
+  "localizedResources": {
+    "HighChartWebPartStrings": "lib/webparts/highChart/loc/{locale}.js",
+    "ProgressBarWebPartStrings": "lib/webparts/progressBar/loc/{locale}.js",
+    "TableWebPartStrings": "lib/webparts/table/loc/{locale}.js"
+  }
+}
