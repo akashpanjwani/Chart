@@ -3,7 +3,9 @@ import { Version } from '@microsoft/sp-core-library';
 import {
   BaseClientSideWebPart,
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneDropdown,
+  IPropertyPaneDropdownOption
 } from '@microsoft/sp-webpart-base';
 import { escape } from '@microsoft/sp-lodash-subset';
 import styles from './ProgressBarWebPart.module.scss';
@@ -27,7 +29,11 @@ let webUrl;
 let ReportOption: IDropdownOption[] = [];
 let selectedValue = "All";
 
+
 export default class ProgressBarWebPart extends BaseClientSideWebPart<IProgressBarWebPartProps> {
+
+  private listDropDownOptions: IPropertyPaneDropdownOption[] = [];
+  
   public render(): void {
     let mythis = this;
     SPComponentLoader.loadScript("https://code.jquery.com/jquery-3.1.1.min.js").then(() => {
@@ -35,24 +41,14 @@ export default class ProgressBarWebPart extends BaseClientSideWebPart<IProgressB
         SPComponentLoader.loadScript("https://rawgit.com/highcharts/rounded-corners/master/rounded-corners.js").then(async () => {
           this.domElement.innerHTML = `
           <div style={{ width: "50%" }}>
-        <div> Select Component </div>
-        <select id="mySelect">
-            
-        </select>
-        </div>
       <div class="${ styles.progressBar}">
         <div class="${ styles.container}">
           <div id="container"></div>          
         </div>
       </div>`;
       
-          $('#mySelect').change(function () {
-            selectedValue=$(this).val();
-            console.log(selectedValue);
-            
-          });
-          
           //require('./CustomScript.js');
+          await this.getAllListsFromWeb();
           await this.getOptions();
           this.getlistItems();
         });
@@ -60,9 +56,7 @@ export default class ProgressBarWebPart extends BaseClientSideWebPart<IProgressB
     });
 
   }
-  public changedValue() {
-    console.log("Method not implemented.");
-  }
+
 
   public async getOptions() {
     let web = new Web(this.properties.Site);
@@ -86,7 +80,7 @@ export default class ProgressBarWebPart extends BaseClientSideWebPart<IProgressB
     let web = new Web(this.properties.Site);
     await web.lists.getByTitle(this.properties.List).items.get().then((items: any[]) => {
 
-      items=$.grep(items,(e,val)=>{return e["Component"]!=selectedValue;});
+      items=$.grep(items,(e,val)=>{return e["Component"]!=this.properties.Component;});
 
       totalLength = items.length;
 
@@ -98,6 +92,24 @@ export default class ProgressBarWebPart extends BaseClientSideWebPart<IProgressB
       this.renderChart(totalLength, completedCount, per);
     });
   }
+
+  private getAllListsFromWeb() {
+    this.listDropDownOptions = [];
+    let count: number = 0;
+
+    let web = new Web(this.properties.Site);
+    let list=web.lists.getByTitle(this.properties.List);
+    list.fields.getByInternalNameOrTitle("Component").get().then(result => {
+      let choices=result.Choices;
+      this.listDropDownOptions.push({ key: "All", text:"All" });
+
+      for (var option of choices) {
+        this.listDropDownOptions.push({ key: option, text: option });
+      }
+    });
+    this.context.propertyPane.refresh();
+  }
+
 
   // Accepts the array and key
   public groupByStatus(array, key) {
@@ -212,6 +224,10 @@ export default class ProgressBarWebPart extends BaseClientSideWebPart<IProgressB
                 PropertyPaneTextField('List', {
                   label: "Enter the List Name"
                 }),
+                PropertyPaneDropdown('Component', {
+                  label: "Select Component",
+                  options: this.listDropDownOptions
+                })
               ]
             }
           ]
